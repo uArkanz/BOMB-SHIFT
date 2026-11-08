@@ -1,0 +1,400 @@
+/* src/pages/GamePage.module.css */
+/* Layout da tela de combate com painéis laterais arcade/cyberpunk.
+   A arena Phaser (832×832) permanece central com Scale.FIT intacto.  */
+
+/* ── Wrapper ─────────────────────────────────────────────────────────────── */
+
+.wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: #0a0a0f;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+/* ── Canvas area ─────────────────────────────────────────────────────────── */
+
+.canvasArea {
+  position: relative;
+  /* Fixed to arena natural size; Phaser Scale.FIT handles fitting inside this */
+  flex: 0 0 auto;
+  width: min(100vh, 832px);   /* preserve square on short screens */
+  max-width: 832px;
+  align-self: center;
+}
+
+/* Neon glow ring around the arena */
+.arenaGlow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 2;
+  transition: box-shadow 0.6s ease;
+}
+
+.glow_neon     { box-shadow: 0 0 0 1px rgba(0,255,247,0.25), 0 0 20px rgba(0,255,247,0.12), 0 0 60px rgba(0,255,247,0.06); }
+.glow_void     { box-shadow: 0 0 0 1px rgba(255,0,204,0.25), 0 0 20px rgba(255,0,204,0.12), 0 0 60px rgba(255,0,204,0.06); }
+.glow_critical { box-shadow: 0 0 0 1px rgba(255,68,0,0.30),  0 0 20px rgba(255,68,0,0.14),  0 0 60px rgba(255,68,0,0.07);  }
+
+/* ── Side panels shared ──────────────────────────────────────────────────── */
+
+.panel {
+  flex: 1 1 0;
+  min-width: 0;          /* allow shrinking below content */
+  max-width: 280px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  pointer-events: none;  /* panels must not capture keyboard/mouse meant for the game */
+  user-select: none;
+}
+
+.panelLeft {
+  border-right: 1px solid transparent;
+  background: linear-gradient(to right, #0d0d18 0%, #080810 100%);
+  transition: border-color 0.6s ease;
+}
+
+.panelRight {
+  border-left: 1px solid transparent;
+  background: linear-gradient(to left, #0d0d18 0%, #080810 100%);
+  transition: border-color 0.6s ease;
+}
+
+/* Theme accent borders */
+.panelLeft.theme_neon     { border-right-color: rgba(0,255,247,0.2); }
+.panelLeft.theme_void     { border-right-color: rgba(255,0,204,0.2); }
+.panelLeft.theme_critical { border-right-color: rgba(255,68,0,0.25); }
+
+.panelRight.theme_neon     { border-left-color: rgba(0,255,247,0.2); }
+.panelRight.theme_void     { border-left-color: rgba(255,0,204,0.2); }
+.panelRight.theme_critical { border-left-color: rgba(255,68,0,0.25); }
+
+.panelInner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 16px 16px;
+  overflow: hidden;
+}
+
+/* ── Logo ──────────────────────────────────────────────────────────────── */
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  font-family: var(--font-display);
+}
+
+.logoLine1 {
+  font-size: 1.45rem;
+  font-weight: bold;
+  color: var(--color-cyan);
+  letter-spacing: 0.12em;
+  transition: color 0.6s ease, text-shadow 0.6s ease;
+}
+
+.theme_neon     .logoLine1 { color: #00fff7; text-shadow: 0 0 8px rgba(0,255,247,0.6); }
+.theme_void     .logoLine1 { color: #ff00cc; text-shadow: 0 0 8px rgba(255,0,204,0.6); }
+.theme_critical .logoLine1 { color: #ff6622; text-shadow: 0 0 8px rgba(255,68,0,0.6);  }
+
+.logoDivider {
+  font-size: 1rem;
+  color: #444466;
+  letter-spacing: 0.05em;
+}
+
+.logoLine2 {
+  font-size: 1.45rem;
+  font-weight: bold;
+  color: #c0c0d8;
+  letter-spacing: 0.12em;
+}
+
+/* ── Mode badge ────────────────────────────────────────────────────────── */
+
+.modeBadge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 2px;
+  border: 1px solid;
+  width: fit-content;
+  transition: color 0.6s ease, border-color 0.6s ease, background 0.6s ease;
+}
+
+.theme_neon     .modeBadge { color: #00fff7; border-color: rgba(0,255,247,0.35); background: rgba(0,255,247,0.06); }
+.theme_void     .modeBadge { color: #ff00cc; border-color: rgba(255,0,204,0.35); background: rgba(255,0,204,0.06); }
+.theme_critical .modeBadge { color: #ff6622; border-color: rgba(255,68,0,0.40);  background: rgba(255,68,0,0.07);  }
+
+/* ── Divider ───────────────────────────────────────────────────────────── */
+
+.divider {
+  border: none;
+  border-top: 1px solid #1e1e30;
+  margin: 0;
+}
+
+/* ── Player card ───────────────────────────────────────────────────────── */
+
+.playerCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.playerSprite {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(0,255,247,0.5));
+  transition: filter 0.6s ease;
+}
+
+.theme_neon     .playerSprite { filter: drop-shadow(0 0 6px rgba(0,255,247,0.55)); }
+.theme_void     .playerSprite { filter: drop-shadow(0 0 6px rgba(255,0,204,0.55)); }
+.theme_critical .playerSprite { filter: drop-shadow(0 0 6px rgba(255,68,0,0.55)); }
+
+.playerSpriteRight {
+  align-self: flex-end;
+}
+
+.playerName {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--color-text);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playerNameRight {
+  align-self: flex-end;
+}
+
+.playerTag {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+/* ── Controls block ────────────────────────────────────────────────────── */
+
+.controlsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.controlsTitle {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.controlsTitleRight {
+  text-align: right;
+}
+
+.keyRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  background: #161626;
+  border: 1px solid #2a2a44;
+  border-radius: 3px;
+  color: #8888aa;
+  flex-shrink: 0;
+  transition: border-color 0.6s ease, color 0.6s ease;
+}
+
+.theme_neon     .key { border-color: rgba(0,255,247,0.25); color: rgba(0,255,247,0.7); }
+.theme_void     .key { border-color: rgba(255,0,204,0.25); color: rgba(255,0,204,0.7); }
+.theme_critical .key { border-color: rgba(255,68,0,0.30);  color: rgba(255,68,0,0.8);  }
+
+.keyRight {
+  /* no override needed — inherits from .key + .theme_* */
+}
+
+.keyWide {
+  composes: key;
+  min-width: 52px;
+  padding: 0 6px;
+}
+
+.keyLabel {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  color: #444466;
+  margin-left: 2px;
+}
+
+/* ── Solo tips ─────────────────────────────────────────────────────────── */
+
+.tipsList {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tip {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--color-text-dim);
+  line-height: 1.4;
+}
+
+/* ── Enemy guide ───────────────────────────────────────────────────────── */
+
+.enemyGuide {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.enemyRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  color: #888899;
+}
+
+.enemySprite {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+/* ── Decorative elements ───────────────────────────────────────────────── */
+
+/* Subtle scanline overlay */
+.scanline {
+  flex: 1;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(255,255,255,0.012) 3px,
+    rgba(255,255,255,0.012) 4px
+  );
+  pointer-events: none;
+}
+
+/* Corner accent dot */
+.cornerDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  align-self: flex-end;
+  transition: background 0.6s ease, box-shadow 0.6s ease;
+}
+
+.theme_neon     .cornerDot { background: rgba(0,255,247,0.5);  box-shadow: 0 0 6px rgba(0,255,247,0.6); }
+.theme_void     .cornerDot { background: rgba(255,0,204,0.5);  box-shadow: 0 0 6px rgba(255,0,204,0.6); }
+.theme_critical .cornerDot { background: rgba(255,68,0,0.55);  box-shadow: 0 0 6px rgba(255,68,0,0.6);  }
+
+/* ── Back button ─────────────────────────────────────────────────────────── */
+
+.backBtn {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: var(--z-hud);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: 1;
+  opacity: 0.3;
+  padding: var(--space-2) var(--space-3);
+  pointer-events: auto;   /* re-enable: this button IS interactive */
+  transition: opacity 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.backBtn:hover {
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+  opacity: 1;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+/* ~1366px: panels get narrower but remain visible */
+@media (max-width: 1366px) {
+  .panel {
+    max-width: 180px;
+  }
+
+  .logoLine1,
+  .logoLine2 {
+    font-size: 1.1rem;
+  }
+
+  .playerSprite {
+    width: 36px;
+    height: 36px;
+  }
+
+  .enemySprite {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ~1100px: hide panels entirely so the arena still fits */
+@media (max-width: 1100px) {
+  .panel {
+    display: none;
+  }
+
+  .canvasArea {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Short screens (portrait / small height): ensure arena is not cut */
+@media (max-height: 768px) {
+  .panel {
+    display: none;
+  }
+
+  .canvasArea {
+    width: 100%;
+    max-width: 100%;
+  }
+}

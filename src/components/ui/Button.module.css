@@ -1,0 +1,66 @@
+/* src/components/ui/Button.module.css */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  letter-spacing: 0.08em;
+  padding: var(--space-3) var(--space-6);
+  text-transform: uppercase;
+  transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* ── Variants ─────────────────────────────────────────────────────────────── */
+
+.primary {
+  background: transparent;
+  border: 1px solid var(--color-cyan);
+  color: var(--color-cyan);
+}
+.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-cyan) 12%, transparent);
+  box-shadow: var(--glow-sm);
+}
+
+.secondary {
+  background: transparent;
+  border: 1px solid var(--color-magenta);
+  color: var(--color-magenta);
+}
+.secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-magenta) 12%, transparent);
+  box-shadow: var(--glow-magenta-sm);
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-dim);
+}
+.ghost:hover:not(:disabled) {
+  border-color: var(--color-text-dim);
+  color: var(--color-text);
+}
+
+/* ── Sizes ────────────────────────────────────────────────────────────────── */
+
+.sm {
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-4);
+}
+
+.lg {
+  font-size: var(--text-lg);
+  padding: var(--space-4) var(--space-8);
+}

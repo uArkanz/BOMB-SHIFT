@@ -1,0 +1,37 @@
+/* src/components/ui/Logo.module.css */
+
+.logo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  user-select: none;
+}
+
+.bomb  { color: var(--color-cyan); }
+.slash { color: var(--color-magenta); }
+.shift { color: var(--color-cyan); }
+
+/* ── Sizes ─────────────────────────────────────────────────────────────────── */
+
+.sm  { font-size: var(--text-xl); }
+.md  { font-size: var(--text-2xl); }
+.lg  { font-size: var(--text-3xl); }
+
+/* ── Animation ─────────────────────────────────────────────────────────────── */
+
+.animate .bomb,
+.animate .shift {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+.animate .slash {
+  animation: glowPulse 3s ease-in-out infinite 1.5s;
+}
+
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 8px var(--color-cyan), 0 0 20px var(--color-cyan-dim); }
+  50%       { text-shadow: 0 0 16px var(--color-cyan), 0 0 40px var(--color-cyan-dim); }
+}

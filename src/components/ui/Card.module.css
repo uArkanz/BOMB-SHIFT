@@ -1,0 +1,32 @@
+/* src/components/ui/Card.module.css */
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.clickable {
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+.clickable:hover {
+  transform: translateY(-2px);
+}
+
+.cyan {
+  border-color: color-mix(in srgb, var(--color-cyan) 40%, var(--color-border));
+}
+.cyan.clickable:hover {
+  border-color: var(--color-cyan);
+  box-shadow: var(--glow-sm);
+}
+
+.magenta {
+  border-color: color-mix(in srgb, var(--color-magenta) 40%, var(--color-border));
+}
+.magenta.clickable:hover {
+  border-color: var(--color-magenta);
+  box-shadow: var(--glow-magenta-sm);
+}
